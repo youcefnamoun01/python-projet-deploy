@@ -30,6 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           pytest
 
       - name: Build, Tag, and Push Docker image
