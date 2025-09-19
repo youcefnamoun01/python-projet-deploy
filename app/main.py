@@ -15,4 +15,4 @@ if __name__ == "__main__":
     dire_bonjour("Youcef")
     addition(3, 7)
     afficher_liste(["pomme", "banane", "orange"])
-    print("Programme terminé.")
+    print("Programme terminé")
