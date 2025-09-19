@@ -24,6 +24,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          pytest
+
       - name: Build, Tag, and Push Docker image
         run: |
           IMAGE_REPO=${{ secrets.ECR_REPOSITORY }}

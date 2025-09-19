@@ -1,18 +1,13 @@
+def dire_bonjour(nom: str):
+    return f"Bonjour, {nom} !"
 
-def dire_bonjour(nom):
-    print(f"Bonjour, {nom} !")
-
-def addition(a, b):
-    resultat = a + b
-    print(f"La somme de {a} et {b} est {resultat}")
+def addition(a: int, b: int) -> int:
+    return a + b
 
 def afficher_liste(liste):
-    print("Voici la liste :")
-    for element in liste:
-        print(f"- {element}")
+    return "\n".join([f"- {e}" for e in liste])
 
 if __name__ == "__main__":
-    dire_bonjour("Youcef")
-    addition(3, 7)
-    afficher_liste(["pomme", "banane", "orange"])
-    print("Programme terminé.")
+    print(dire_bonjour("Youcef"))
+    print(f"La somme de 3 et 7 est {addition(3,7)}")
+    print(afficher_liste(["pomme","banane","orange"]))
