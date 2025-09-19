@@ -3,10 +3,7 @@ name: Build and Push to AWS ECR
 on:
   push:
     branches:
-      - main
-      - dev
-    tags:
-      - 'v*.*.*'
+      - main   # déclenche sur push dans main
 
 jobs:
   build:
@@ -32,32 +29,13 @@ jobs:
           IMAGE_REPO=${{ secrets.ECR_REPOSITORY }}
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           REGION=${{ secrets.AWS_REGION }}
-          IMAGE_BASE=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$IMAGE_REPO
+          IMAGE_TAG=latest
 
-          docker build -t $IMAGE_REPO .
+          # Construire l'image
+          docker build -t $IMAGE_REPO:$IMAGE_TAG .
 
-          if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            # Cas release → seulement le tag version
-            VERSION=${GITHUB_REF#refs/tags/}
-            docker tag $IMAGE_REPO $IMAGE_BASE:$VERSION
-            docker push $IMAGE_BASE:$VERSION
+          # Tag pour ECR
+          docker tag $IMAGE_REPO:$IMAGE_TAG $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$IMAGE_REPO:$IMAGE_TAG
 
-            # Optionnel : latest si c’est la prod
-            docker tag $IMAGE_REPO $IMAGE_BASE:latest
-            docker push $IMAGE_BASE:latest
-          else
-            # Cas normal → dev ou main
-            COMMIT_SHA=${{ github.sha }}
-            BRANCH_NAME=${GITHUB_REF##*/}
-
-            docker tag $IMAGE_REPO $IMAGE_BASE:sha-${COMMIT_SHA}
-            docker push $IMAGE_BASE:sha-${COMMIT_SHA}
-
-            docker tag $IMAGE_REPO $IMAGE_BASE:branch-${BRANCH_NAME}
-            docker push $IMAGE_BASE:branch-${BRANCH_NAME}
-
-            if [ "$BRANCH_NAME" = "main" ]; then
-              docker tag $IMAGE_REPO $IMAGE_BASE:latest
-              docker push $IMAGE_BASE:latest
-            fi
-          fi
+          # Push vers ECR
+          docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$IMAGE_REPO:$IMAGE_TAG
